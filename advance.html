@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -215,7 +215,7 @@
             <p>Activities</p>
         </div>
         <div class="header-middle">
-            <p id="rhel-time">Aug 30 00:24</p>
+            <p id="rhel-time">Aug 30 00:24</p> <!-- 현재 시간 표시 -->
         </div>
         <div class="header-right">
             <div>한</div>
@@ -270,16 +270,19 @@
         </div>
     </div>
 
+    <!-- AJAX Import -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
-        let currentInput = '';
-        let operation = '';
+        let currentInput = ''; // 현재 입력된 수식
+        let operation = ''; // 연산자
         let resultDisplayed = false;
 
+        // 키보드로 수식 입력하는거 처리
         document.addEventListener("keydown", (e) => {
             handleInput(e.key);
         });
 
+        // 버튼으로 수식 입력하는거 처리
         document.querySelectorAll('.button').forEach(button => {
             button.addEventListener('click', (e) => {
                 handleInput(e.target.innerText);
@@ -290,13 +293,14 @@
             const display = document.getElementById('calc-typed');
             const operationDisplay = document.getElementById('calc-operation');
 
+            // dangling else 방지를 위해 switch-case문 사용
             switch (input) {
-                case 'C':
+                case 'C': // 계산기 초기화
                     currentInput = '';
                     operation = '';
                     operationDisplay.innerText = 'OctCalculator';
                     break;
-                case '+/-':
+                case '+/-': // 부호변경
                     if (currentInput.startsWith('-')) {
                         currentInput = currentInput.slice(1);
                     } else if (currentInput) {
@@ -308,7 +312,7 @@
                         currentInput += input;
                     }
                     break;
-                case '+':
+                case '+': // 사칙연산 처리
                 case '-':
                 case 'x':
                 case '/':
@@ -320,26 +324,26 @@
                         operation = operation.slice(0, -2) + input + ' ';
                     }
                     break;
-                case '%':
+                case '%': // 나머지 계산 처리
                     if (currentInput !== '') {
                         currentInput = (parseFloat(currentInput) / 100).toString();
                     }
                     break;
-                case '(':
+                case '(': // 괄호 처리
                 case ')':
                     currentInput += input;
                     break;
-                case 'Enter':
+                case 'Enter': // Enter or = 클릭 시 입력된 수식에 대한 값 계산 후 반환
                 case '=':
                     if (currentInput !== '' && operation !== '') {
                         operation += currentInput;
-                        currentInput = evaluateExpression(operation).toString();
+                        currentInput = evaluateExpression(operation).toString(); // evaluateExpression 함수에서 값 계산
                         operation = '';
                         resultDisplayed = true;
                     }
                     break;
-                case 'Backspace':
-                    currentInput = currentInput.slice(0, -1);
+                case 'Backspace': // 글자 지우기 기능
+                    currentInput = currentInput.slice(0, -1); // 맨 뒷 글자 슬라이싱하여 삭제
                     break;
                 default:
                     if (!isNaN(input)) {
@@ -353,10 +357,10 @@
                     break;
             }
 
-            display.innerHTML = currentInput || '0';
+            display.innerHTML = currentInput || '0'; // input 초기화
             operationDisplay.innerText = operation || 'OctCalculator';
 
-            moveCursorToEnd();
+            moveCursorToEnd(); // 수식 입력 시에도 커서가 맨 뒤에 위치할 수 있도록
         }
 
         function evaluateExpression(expression) {
@@ -365,7 +369,7 @@
                 if (isNaN(result)) {
                     throw new Error('Invalid Calculation');
                 }
-                return parseFloat(result.toFixed(6)); // Max 6 decimal places
+                return parseFloat(result.toFixed(6)); // 소수점 제한 (6자리)
             } catch (error) {
                 alert('Invalid Calculation');
                 return 0;
@@ -375,7 +379,7 @@
         function moveCursorToEnd() {
             const blinkElement = document.getElementById('blink');
             if (blinkElement) {
-                blinkElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'end' });
+                blinkElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'end' }); // 입력 커서 맨 뒤로 고정
             }
         }
 
