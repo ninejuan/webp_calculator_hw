@@ -112,7 +112,7 @@
           </div>
           <div class="calc-button-row">
             <div class="button c">C</div>
-            <div class="button l">≠</div>
+            <div class="button l">( )</div>
             <div class="button l">%</div>
             <div class="button l">/</div>
           </div>
@@ -135,10 +135,9 @@
             <div class="button l">+</div>
           </div>
           <div class="calc-button-row">
-            <div class="button">.</div>
+            <div class="button">+/-</div>
             <div class="button">0</div>
-            <div class="button">
-              <</div>
+            <div class="button">.</div>
                 <div class="button l">=</div>
             </div>
           </div>
@@ -146,6 +145,27 @@
 </body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
+    document.addEventListener("keydown", (e) => {
+        console.log(e.key)
+        console.log(Number(e.key))
+        console.log(eval('1+1'))
+        switch(e.key) {
+            case !isNaN(e.key):
+                break;
+            case '+':
+                break;
+            case '-':
+                break;
+            case '*':
+                break;
+            case '/':
+                break;
+            case '=' || 'Enter':
+                eval();
+                break;
+        }
+    });
+
     function blinker() {
         $('#blink').fadeOut(200);
         $('#blink').fadeIn(200);

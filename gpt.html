@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunrin Calculator</title>
+    <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: "Pretendard Variable", Pretendard !important;
+        }
+
+        body {
+            background: #EAEBEC;
+            margin: 0;
+            width: 100%;
+            height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .calc-body {
+            width: 275px;
+            border: solid 1px #3A4655;
+            box-shadow: 0 8px 50px -7px black;
+            background-color: #3C4857;
+        }
+
+        .calc-screen {
+            background: #3A4655;
+            width: 100%;
+            height: 150px;
+            padding: 20px;
+            position: relative;
+        }
+
+        .calc-operation {
+            text-align: right;
+            color: #727B86;
+            font-size: 21px;
+            padding-bottom: 10px;
+            border-bottom: solid 1px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .calc-typed {
+            margin-top: 20px;
+            font-size: 45px;
+            text-align: right;
+            color: #fff;
+        }
+
+        .calc-button-row {
+            width: 100%;
+            background: #3C4857;
+        }
+
+        .button {
+            width: 25%;
+            background: #425062;
+            color: #fff;
+            padding: 20px;
+            display: inline-block;
+            font-size: 25px;
+            text-align: center;
+            vertical-align: middle;
+            margin-right: -4px;
+            border-right: solid 2px #3C4857;
+            border-bottom: solid 2px #3C4857;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+
+        .button.l {
+            color: #AEB3BA;
+            background: #404D5E;
+        }
+
+        .button.c {
+            color: #D95D4E;
+            background: #404D5E;
+        }
+
+        .button:hover,
+        .button.c:hover,
+        .button.l:hover {
+            background: #bec2c7;
+            color: #000;
+        }
+
+        #blink {
+            color: #BCA3F5;
+            position: absolute;
+            right: 10px;
+            top: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="calc-body">
+            <div class="calc-screen">
+                <div class="calc-operation" id="calc-operation">Sunrin Calculator</div>
+                <div class="calc-typed" id="calc-typed">0<span id="blink">_</span></div>
+            </div>
+            <div class="calc-button-row">
+                <div class="button c" id="clear">C</div>
+                <div class="button l">( )</div>
+                <div class="button l">%</div>
+                <div class="button l">/</div>
+            </div>
+            <div class="calc-button-row">
+                <div class="button">7</div>
+                <div class="button">8</div>
+                <div class="button">9</div>
+                <div class="button l">x</div>
+            </div>
+            <div class="calc-button-row">
+                <div class="button">4</div>
+                <div class="button">5</div>
+                <div class="button">6</div>
+                <div class="button l">-</div>
+            </div>
+            <div class="calc-button-row">
+                <div class="button">1</div>
+                <div class="button">2</div>
+                <div class="button">3</div>
+                <div class="button l">+</div>
+            </div>
+            <div class="calc-button-row">
+                <div class="button">+/-</div>
+                <div class="button">0</div>
+                <div class="button">.</div>
+                <div class="button l">=</div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    let currentInput = '';
+    let operation = '';
+    let resultDisplayed = false;
+
+    document.addEventListener("keydown", (e) => {
+        handleInput(e.key);
+    });
+
+    document.querySelectorAll('.button').forEach(button => {
+        button.addEventListener('click', (e) => {
+            handleInput(e.target.innerText);
+        });
+    });
+
+    function handleInput(input) {
+        const display = document.getElementById('calc-typed');
+        const operationDisplay = document.getElementById('calc-operation');
+
+        switch (input) {
+            case 'C':
+                currentInput = '';
+                operation = '';
+                operationDisplay.innerText = 'Sunrin Calculator';
+                break;
+            case '+/-':
+                if (currentInput.startsWith('-')) {
+                    currentInput = currentInput.slice(1);
+                } else if (currentInput) {
+                    currentInput = '-' + currentInput;
+                }
+                break;
+            case '.':
+                if (!currentInput.includes('.')) {
+                    currentInput += input;
+                }
+                break;
+            case '+':
+            case '-':
+            case 'x':
+            case '/':
+                if (currentInput !== '') {
+                    operation += currentInput + ' ' + input + ' ';
+                    currentInput = '';
+                    resultDisplayed = false;
+                } else if (operation && !resultDisplayed) {
+                    operation = operation.slice(0, -2) + input + ' ';
+                }
+                break;
+            case '%':
+                if (currentInput !== '') {
+                    currentInput = (parseFloat(currentInput) / 100).toString();
+                }
+                break;
+            case '(':
+            case ')':
+                currentInput += input;
+                break;
+            case 'Enter':
+            case '=':
+                if (currentInput !== '' && operation !== '') {
+                    operation += currentInput;
+                    currentInput = evaluateExpression(operation).toString();
+                    operation = '';
+                    resultDisplayed = true;
+                }
+                break;
+            case 'Backspace':
+                currentInput = currentInput.slice(0, -1);
+                break;
+            default:
+                if (!isNaN(input)) {
+                    if (resultDisplayed) {
+                        currentInput = input;
+                        resultDisplayed = false;
+                    } else {
+                        currentInput += input;
+                    }
+                }
+                break;
+        }
+
+        display.innerHTML = currentInput || '0' + '<span id="blink">_</span>';
+        operationDisplay.innerText = operation || 'Sunrin Calculator';
+
+        moveCursorToEnd();
+    }
+
+    function evaluateExpression(expression) {
+        try {
+            let result = new Function('return ' + expression.replace(/x/g, '*'))();
+            if (isNaN(result)) {
+                throw new Error('Invalid Calculation');
+            }
+            return parseFloat(result.toFixed(6)); // Max 6 decimal places
+        } catch (error) {
+            alert('Invalid Calculation');
+            return 0;
+        }
+    }
+
+    function moveCursorToEnd() {
+        const blinkElement = document.getElementById('blink');
+        if (blinkElement) {
+            blinkElement.parentNode.appendChild(blinkElement);
+        }
+    }
+
+    function blinker() {
+        $('#blink').fadeOut(200);
+        $('#blink').fadeIn(200);
+    }
+    setInterval(blinker, 500);
+</script>
+
+</html>
